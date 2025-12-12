@@ -1,0 +1,14 @@
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.GeneratedMSBuildEditorConfig.editorconfig
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.AssemblyInfoInputs.cache
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.AssemblyInfo.cs
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.csproj.CoreCompileInputs.cache
+/Users/zloadmin/Projects/MavlinkNetConsole/bin/Debug/net10.0/MavlinkNetConsole
+/Users/zloadmin/Projects/MavlinkNetConsole/bin/Debug/net10.0/MavlinkNetConsole.deps.json
+/Users/zloadmin/Projects/MavlinkNetConsole/bin/Debug/net10.0/MavlinkNetConsole.runtimeconfig.json
+/Users/zloadmin/Projects/MavlinkNetConsole/bin/Debug/net10.0/MavlinkNetConsole.dll
+/Users/zloadmin/Projects/MavlinkNetConsole/bin/Debug/net10.0/MavlinkNetConsole.pdb
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.dll
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/refint/MavlinkNetConsole.dll
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.pdb
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/MavlinkNetConsole.genruntimeconfig.cache
+/Users/zloadmin/Projects/MavlinkNetConsole/obj/Debug/net10.0/ref/MavlinkNetConsole.dll
