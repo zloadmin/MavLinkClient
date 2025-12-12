@@ -12,19 +12,29 @@ namespace MavLinkNet
 
         static void Main()
         {
-            Console.WriteLine("test");
+            // Console.WriteLine("test");
             udpTransport = new MavLinkUdpTransport();
+            // udpTransport.OnPacketReceived += OnPacketReceived;
             udpTransport.Initialize();
-
-            int Iteration = 0;
-            while (true)
-            {
-                UasStatustext statustext = new UasStatustext();
-                statustext.Text = getStringAsFiftyByteArray("Iteration " + Iteration);
-                udpTransport.SendMessage(statustext);
-                Thread.Sleep(1000);
-                Iteration++;
-            }
+            //
+            // Console.ReadLine();
+            //
+            // UasStatustext statustext = new UasStatustext();
+            // statustext.Text = getStringAsFiftyByteArray("test");
+            UasStatustext statustext = new UasStatustext();
+            statustext.Text = getStringAsFiftyByteArray("test");
+            udpTransport.SendMessage(statustext);
+            //
+            // int Iteration = 0;
+            // while (true)
+            // {
+            //     UasStatustext statustext = new UasStatustext();
+            //     statustext.Text = getStringAsFiftyByteArray("Iteration " + Iteration);
+            //     udpTransport.SendMessage(statustext);
+            //     Thread.Sleep(1000);
+            //     Iteration++;
+            //     Console.WriteLine("Iteration " + Iteration);
+            // }
         }
 
         static char[] getStringAsFiftyByteArray(string source)
@@ -37,10 +47,10 @@ namespace MavLinkNet
             return buffer;
         }
 
-        // static void OnPacketReceived(object sender, MavLinkPacket packet)
-        // {
-        //     Console.WriteLine("Packet received");   
-        // }
+        static void OnPacketReceived(object sender, MavLinkPacket packet)
+        {
+            Console.WriteLine("Packet received");   
+        }
         // static void OnReceptionEnded(object? sender, EventArgs e)
         // {
         //     Console.WriteLine("Packet received");   

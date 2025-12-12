@@ -10,7 +10,7 @@ namespace MavLinkNet
 
     public abstract class MavLinkGenericPacketWalker
     {
-        public const byte PacketSignalByte = 0xFE;
+        public const byte PacketSignalByte = 0xFD;
 
         /// <summary>
         /// Event raised everytime a packet is received. This event is synchronous, 

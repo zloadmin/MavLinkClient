@@ -32,7 +32,7 @@ namespace MavLinkNet
 {
     public class MavLinkUdpTransport: MavLinkGenericTransport
     {
-        public int UdpListeningPort = 0;  // Any available port
+        public int UdpListeningPort = 14550;  // Any available port
         public int UdpTargetPort = 14555;
         public IPAddress TargetIpAddress = new IPAddress(new byte[] { 172,16,8,128 });
         public int HeartBeatUpdateRateMs = 1000;
@@ -162,7 +162,8 @@ namespace MavLinkNet
         private void SendMavlinkMessage(IPEndPoint ep, UasMessage msg)
         {
             byte[] buffer = mMavLink.SerializeMessage(msg, MavlinkSystemId, MavlinkComponentId, true);
-            
+            string hex = BitConverter.ToString(buffer);
+            Console.WriteLine(hex);
             mUdpClient.Send(buffer, buffer.Length, ep);
         }
 

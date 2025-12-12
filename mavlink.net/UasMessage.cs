@@ -36,9 +36,14 @@ namespace MavLinkNet
             protected set; 
         }
 
-        public byte MessageId
+        public uint MessageId
         {
             get { return mMessageId; }
+        }
+
+        public virtual uint PacketSize
+        {
+            get { return 0; }
         }
 
 
@@ -110,4 +115,9 @@ namespace MavLinkNet
         public string Description;
         public List<string> Params;
     }
+    public enum WireProtocolVersion
+    {
+        v10,
+        v20
+    };
 }
