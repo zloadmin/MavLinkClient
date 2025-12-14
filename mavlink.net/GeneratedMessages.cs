@@ -2734,13 +2734,13 @@ namespace MavLinkNet
 
         internal override void SerializeBody(BinaryWriter s)
         {
-            s.Write(mTimeUnixUsec);
+            // s.Write(mTimeUnixUsec);
             s.Write(mTimeBootMs);
         }
 
         internal override void DeserializeBody(BinaryReader s)
         {
-            this.mTimeUnixUsec = s.ReadUInt64();
+            // this.mTimeUnixUsec = s.ReadUInt64();
             this.mTimeBootMs = s.ReadUInt32();
         }
 
@@ -2818,17 +2818,17 @@ namespace MavLinkNet
         internal override void SerializeBody(BinaryWriter s)
         {
             s.Write(mTimeUsec);
-            s.Write(mSeq);
-            s.Write(mTargetSystem);
-            s.Write(mTargetComponent);
+            // s.Write(mSeq);
+            // s.Write(mTargetSystem);
+            // s.Write(mTargetComponent);
         }
 
         internal override void DeserializeBody(BinaryReader s)
         {
             this.mTimeUsec = s.ReadUInt64();
-            this.mSeq = s.ReadUInt32();
-            this.mTargetSystem = s.ReadByte();
-            this.mTargetComponent = s.ReadByte();
+            // this.mSeq = s.ReadUInt32();
+            // this.mTargetSystem = s.ReadByte();
+            // this.mTargetComponent = s.ReadByte();
         }
 
         protected override void InitMetadata()
@@ -6152,7 +6152,7 @@ namespace MavLinkNet
             s.Write(mServo6Raw);
             // s.Write(mServo7Raw);
             // s.Write(mServo8Raw);
-            s.Write(mPort);
+            // s.Write(mPort);
         }
 
         internal override void DeserializeBody(BinaryReader s)
@@ -6166,7 +6166,7 @@ namespace MavLinkNet
             this.mServo6Raw = s.ReadUInt16();
             // this.mServo7Raw = s.ReadUInt16();
             // this.mServo8Raw = s.ReadUInt16();
-            this.mPort = s.ReadByte();
+            // this.mPort = s.ReadByte();
         }
 
         protected override void InitMetadata()
@@ -10350,8 +10350,8 @@ namespace MavLinkNet
             s.Write(mGroundspeed);
             s.Write(mAlt);
             s.Write(mClimb);
-            s.Write(mHeading);
-            s.Write(mThrottle);
+            // s.Write(mHeading);
+            // s.Write(mThrottle);
         }
 
         internal override void DeserializeBody(BinaryReader s)
@@ -10360,8 +10360,8 @@ namespace MavLinkNet
             this.mGroundspeed = s.ReadSingle();
             this.mAlt = s.ReadSingle();
             this.mClimb = s.ReadSingle();
-            this.mHeading = s.ReadInt16();
-            this.mThrottle = s.ReadUInt16();
+            // this.mHeading = s.ReadInt16();
+            // this.mThrottle = s.ReadUInt16();
         }
 
         protected override void InitMetadata()
@@ -11387,8 +11387,8 @@ namespace MavLinkNet
             s.Write(mBodyRollRate);
             s.Write(mBodyPitchRate);
             s.Write(mBodyYawRate);
-            s.Write(mThrust);
-            s.Write(mTypeMask);
+            // s.Write(mThrust);
+            // s.Write(mTypeMask);
         }
 
         internal override void DeserializeBody(BinaryReader s)
@@ -11401,8 +11401,8 @@ namespace MavLinkNet
             this.mBodyRollRate = s.ReadSingle();
             this.mBodyPitchRate = s.ReadSingle();
             this.mBodyYawRate = s.ReadSingle();
-            this.mThrust = s.ReadSingle();
-            this.mTypeMask = s.ReadByte();
+            // this.mThrust = s.ReadSingle();
+            // this.mTypeMask = s.ReadByte();
         }
 
         protected override void InitMetadata()
@@ -16273,13 +16273,13 @@ namespace MavLinkNet
         internal override void SerializeBody(BinaryWriter s)
         {
             s.Write(mTc1);
-            s.Write(mTs1);
+            // s.Write(mTs1);
         }
 
         internal override void DeserializeBody(BinaryReader s)
         {
             this.mTc1 = s.ReadInt64();
-            this.mTs1 = s.ReadInt64();
+            // this.mTs1 = s.ReadInt64();
         }
 
         protected override void InitMetadata()
@@ -24533,7 +24533,7 @@ namespace MavLinkNet
             s.Write(mVibrationZ);
             s.Write(mClipping0);
             s.Write(mClipping1);
-            s.Write(mClipping2);
+            // s.Write(mClipping2);
         }
 
         internal override void DeserializeBody(BinaryReader s)
@@ -24544,7 +24544,7 @@ namespace MavLinkNet
             this.mVibrationZ = s.ReadSingle();
             this.mClipping0 = s.ReadUInt32();
             this.mClipping1 = s.ReadUInt32();
-            this.mClipping2 = s.ReadUInt32();
+            // this.mClipping2 = s.ReadUInt32();
         }
 
         protected override void InitMetadata()
