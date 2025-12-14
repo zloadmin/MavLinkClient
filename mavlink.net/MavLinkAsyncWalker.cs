@@ -37,7 +37,7 @@ namespace MavLinkNet
     /// </remarks>
     public class MavLinkAsyncWalker: MavLinkGenericPacketWalker
     {
-        public const int DefaultCircularBufferSize = 4096;
+        public const int DefaultCircularBufferSize = 4096 *2;
 
         private BlockingCircularStream mProcessStream;
 
@@ -55,6 +55,8 @@ namespace MavLinkNet
         /// <param name="buffer">The buffer to process</param>
         public override void ProcessReceivedBytes(byte[] buffer, int start, int length)
         {
+            string hex = BitConverter.ToString(buffer);
+            Console.WriteLine(hex);
             mProcessStream.Write(buffer, 0, buffer.Length);
         }
 

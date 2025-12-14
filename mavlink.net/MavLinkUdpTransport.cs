@@ -50,7 +50,7 @@ namespace MavLinkNet
         {
             InitializeMavLink();
             InitializeUdpListener(UdpListeningPort);
-            InitializeUdpSender(TargetIpAddress, UdpTargetPort);
+            // InitializeUdpSender(TargetIpAddress, UdpTargetPort);
         }
 
         public override void Dispose()
@@ -162,8 +162,6 @@ namespace MavLinkNet
         private void SendMavlinkMessage(IPEndPoint ep, UasMessage msg)
         {
             byte[] buffer = mMavLink.SerializeMessage(msg, MavlinkSystemId, MavlinkComponentId, true);
-            string hex = BitConverter.ToString(buffer);
-            Console.WriteLine(hex);
             mUdpClient.Send(buffer, buffer.Length, ep);
         }
 

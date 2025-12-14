@@ -14,17 +14,9 @@ namespace MavLinkNet
         {
             // Console.WriteLine("test");
             udpTransport = new MavLinkUdpTransport();
-            // udpTransport.OnPacketReceived += OnPacketReceived;
+            udpTransport.OnPacketReceived += OnPacketReceived;
             udpTransport.Initialize();
-            //
-            // Console.ReadLine();
-            //
-            // UasStatustext statustext = new UasStatustext();
-            // statustext.Text = getStringAsFiftyByteArray("test");
-            UasStatustext statustext = new UasStatustext();
-            statustext.Text = getStringAsFiftyByteArray("test");
-            udpTransport.SendMessage(statustext);
-            //
+            Console.ReadLine();
             // int Iteration = 0;
             // while (true)
             // {
@@ -49,7 +41,7 @@ namespace MavLinkNet
 
         static void OnPacketReceived(object sender, MavLinkPacket packet)
         {
-            Console.WriteLine("Packet received");   
+            Console.WriteLine("Packet received MessageId " + packet.MessageId);   
         }
         // static void OnReceptionEnded(object? sender, EventArgs e)
         // {

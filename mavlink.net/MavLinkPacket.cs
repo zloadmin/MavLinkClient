@@ -41,6 +41,7 @@ namespace MavLinkNet
         public byte ComponentId;
         public uint MessageId;
         public byte[] Payload;
+        public byte[] MessageIdBytes;
         public byte Checksum1;
         public byte Checksum2;
 
@@ -71,10 +72,11 @@ namespace MavLinkNet
                 PacketSequenceNumber = s.ReadByte(),
                 SystemId = s.ReadByte(),
                 ComponentId = s.ReadByte(),
-                MessageId = BitConverter.ToUInt32(PadRightByteArray(s.ReadBytes(3)), 0),
+                // MessageId = BitConverter.ToUInt32(PadRightByteArray(s.ReadBytes(3)), 0),
+                MessageIdBytes = s.ReadBytes(3),
             };
 
-
+            result.MessageId = BitConverter.ToUInt32(PadRightByteArray(result.MessageIdBytes), 0);
             // Read the payload instead of deserializing so we can validate CRC.
             result.Payload = s.ReadBytes(result.PayLoadLength);
             result.Checksum1 = s.ReadByte();
@@ -82,8 +84,27 @@ namespace MavLinkNet
 
             if (result.IsValidCrc())
             {
-                Console.WriteLine("VALID CRC");
-                result.DeserializeMessage();
+                // Console.WriteLine("Message ID " + result.MessageId);
+                // Console.WriteLine("Message ID byte 0 " + result.MessageIdBytes[0]);
+                // Console.WriteLine("Message ID byte 1 " + result.MessageIdBytes[1]);
+                // Console.WriteLine("Message ID byte 2 " + result.MessageIdBytes[2]);
+
+                
+
+                // byte msgId = (byte)(MessageId & 0xFF);
+                // Console.WriteLine("Message id simple " + MessageId);
+                // Console.WriteLine("Message converted " + msgId);
+                try {
+                    result.DeserializeMessage();
+                } catch (Exception ex) {
+                    string hexString = Convert.ToHexString(result.MessageIdBytes);
+                    Console.WriteLine("Message ID HEX "  + hexString);
+                    Console.WriteLine("PayLoadLength " + result.PayLoadLength);
+                    Console.WriteLine("Cannot DeserializeMessage ID " + result.MessageId);
+                }
+            } else {
+                // Console.WriteLine(result.MessageId);
+                Console.WriteLine("NOT VALID CRC message ID" + result.MessageId);
             }
 
             return result;
@@ -112,7 +133,15 @@ namespace MavLinkNet
 
         private void DeserializeMessage()
         {
-            UasMessage result = UasSummary.CreateFromId((byte)MessageId);
+            // string hex = BitConverter.ToString(MessageId);
+            // Console.WriteLine("Message id HEX " + hex);
+            // Console.WriteLine("Message in byte " + (byte)MessageId);
+            // Console.WriteLine("Message in byte " + (byte)MessageId);
+            
+            // Console.WriteLine(MessageId.ToString("X"));
+            
+            
+            UasMessage result = UasSummary.CreateFromId(MessageIdBytes[0]);
                         
             if (result == null) return;  // Unknown type
 
