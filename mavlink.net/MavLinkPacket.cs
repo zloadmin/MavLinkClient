@@ -41,7 +41,7 @@ namespace MavLinkNet
         public byte ComponentId;
         public uint MessageId;
         public byte[] Payload;
-        public byte[] MessageIdBytes;
+        // public byte[] MessageIdBytes;
         public byte Checksum1;
         public byte Checksum2;
 
@@ -72,11 +72,11 @@ namespace MavLinkNet
                 PacketSequenceNumber = s.ReadByte(),
                 SystemId = s.ReadByte(),
                 ComponentId = s.ReadByte(),
-                // MessageId = BitConverter.ToUInt32(PadRightByteArray(s.ReadBytes(3)), 0),
-                MessageIdBytes = s.ReadBytes(3),
+                MessageId = BitConverter.ToUInt32(PadRightByteArray(s.ReadBytes(3)), 0),
+                // MessageIdBytes = s.ReadBytes(3),
             };
 
-            result.MessageId = BitConverter.ToUInt32(PadRightByteArray(result.MessageIdBytes), 0);
+            // result.MessageId = BitConverter.ToUInt32(PadRightByteArray(result.MessageIdBytes), 0);
             // Read the payload instead of deserializing so we can validate CRC.
             result.Payload = s.ReadBytes(result.PayLoadLength);
             result.Checksum1 = s.ReadByte();
@@ -95,9 +95,9 @@ namespace MavLinkNet
                 // Console.WriteLine("Message id simple " + MessageId);
                 // Console.WriteLine("Message converted " + msgId);
                 // try {
-                    string hexString = Convert.ToHexString(result.MessageIdBytes);
-                    Console.WriteLine("Message ID HEX "  + hexString);
-                    Console.WriteLine("PayLoadLength " + result.PayLoadLength);
+                    // string hexString = Convert.ToHexString(result.MessageIdBytes);
+                    // Console.WriteLine("Message ID HEX "  + hexString);
+                    // Console.WriteLine("PayLoadLength " + result.PayLoadLength);
                     result.DeserializeMessage();
                 // } catch (Exception ex) {
                 //     string hexString = Convert.ToHexString(result.MessageIdBytes);
@@ -144,7 +144,7 @@ namespace MavLinkNet
             // Console.WriteLine(MessageId.ToString("X"));
             
             
-            UasMessage result = UasSummary.CreateFromId(MessageIdBytes[0]);
+            UasMessage result = UasSummary.CreateFromId((byte)MessageId);
                         
             if (result == null) return;  // Unknown type
 
@@ -167,6 +167,7 @@ namespace MavLinkNet
         
         private void FillPayloadIfNeeded(UasMessage message)
         {
+            // Console.WriteLine("FillPayloadIfNeeded");
             if(Payload.Length < message.PacketSize)
             {
                 var newArray = new byte[message.PacketSize];
@@ -250,6 +251,9 @@ namespace MavLinkNet
             w.Write(Payload);
             w.Write(Checksum1);
             w.Write(Checksum2);
+            // Payload
+            string hex = BitConverter.ToString(Payload);
+            // Console.WriteLine(hex);
         }
 
         private void UpdateCrc()

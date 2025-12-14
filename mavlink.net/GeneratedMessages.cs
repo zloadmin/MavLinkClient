@@ -10748,18 +10748,18 @@ namespace MavLinkNet
         /// <summary>
         /// System which should execute the command
         /// </summary>
-        public byte TargetSystem {
-            get { return mTargetSystem; }
-            set { mTargetSystem = value; NotifyUpdated(); }
-        }
-
-        /// <summary>
-        /// Component which should execute the command, 0 for all components
-        /// </summary>
-        public byte TargetComponent {
-            get { return mTargetComponent; }
-            set { mTargetComponent = value; NotifyUpdated(); }
-        }
+        // public byte TargetSystem {
+        //     get { return mTargetSystem; }
+        //     set { mTargetSystem = value; NotifyUpdated(); }
+        // }
+        //
+        // /// <summary>
+        // /// Component which should execute the command, 0 for all components
+        // /// </summary>
+        // public byte TargetComponent {
+        //     get { return mTargetComponent; }
+        //     set { mTargetComponent = value; NotifyUpdated(); }
+        // }
 
         /// <summary>
         /// 0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)
@@ -10785,8 +10785,8 @@ namespace MavLinkNet
             s.Write(mParam6);
             s.Write(mParam7);
             s.Write((UInt16)mCommand);
-            s.Write(mTargetSystem);
-            s.Write(mTargetComponent);
+            // s.Write(mTargetSystem);
+            // s.Write(mTargetComponent);
             s.Write(mConfirmation);
         }
 
@@ -10800,8 +10800,8 @@ namespace MavLinkNet
             this.mParam6 = s.ReadSingle();
             this.mParam7 = s.ReadSingle();
             this.mCommand = (MavCmd)s.ReadUInt16();
-            this.mTargetSystem = s.ReadByte();
-            this.mTargetComponent = s.ReadByte();
+            // this.mTargetSystem = s.ReadByte();
+            // this.mTargetComponent = s.ReadByte();
             this.mConfirmation = s.ReadByte();
         }
 
@@ -10888,8 +10888,8 @@ namespace MavLinkNet
         private float mParam6;
         private float mParam7;
         private MavCmd mCommand;
-        private byte mTargetSystem;
-        private byte mTargetComponent;
+        // private byte mTargetSystem;
+        // private byte mTargetComponent;
         private byte mConfirmation;
     }
 
