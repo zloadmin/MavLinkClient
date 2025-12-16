@@ -186,12 +186,12 @@ namespace MavLinkNet
 
 
         public static MavLinkPacket GetPacketForMessage(
-            UasMessage msg, byte systemId, byte componentId, byte sequenceNumber)
+            UasMessage msg, byte sequenceNumber)
         {
             MavLinkPacket result = new MavLinkPacket()
             {
-                SystemId = systemId,
-                ComponentId = componentId,
+                SystemId = msg.SystemId,
+                ComponentId = msg.ComponentId,
                 PacketSequenceNumber = sequenceNumber,
                 MessageId = msg.MessageId,
                 Message = msg
@@ -213,10 +213,10 @@ namespace MavLinkNet
         }
 
         public static byte[] GetBytesForMessage(
-            UasMessage msg, byte systemId, byte componentId, byte sequenceNumber, byte signalMark)
+            UasMessage msg, byte sequenceNumber, byte signalMark)
         {
             MavLinkPacket p = MavLinkPacket.GetPacketForMessage(
-                msg, systemId, componentId, sequenceNumber);
+                msg, sequenceNumber);
 
             int bufferSize = p.GetPacketSize();
 

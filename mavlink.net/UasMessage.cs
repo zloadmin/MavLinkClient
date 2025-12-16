@@ -30,6 +30,19 @@ namespace MavLinkNet
 {
     public class UasMessage
     {
+        
+        public byte SystemId
+        {
+            get => mSystemId;
+            set => mSystemId = value;
+        }
+
+        public byte ComponentId
+        {
+            get => mComponentId;
+            set => mComponentId = value;
+        }
+        
         public byte CrcExtra 
         { 
             get; 
@@ -81,6 +94,8 @@ namespace MavLinkNet
 
         protected byte mMessageId;
         protected UasMessageMetadata mMetadata;
+        protected byte mSystemId = 255;
+        protected byte mComponentId = 0x00;
     }
 
     

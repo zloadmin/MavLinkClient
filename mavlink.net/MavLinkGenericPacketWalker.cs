@@ -42,14 +42,12 @@ namespace MavLinkNet
         /// <param name="includeSignalMark">Whether to include the Packet signal in the buffer or not.</param>
         /// <param name="sequenceNumber">A sequence number for the message, if needed.</param>
         /// <returns></returns>
-        public byte[] SerializeMessage(
-            UasMessage msg, byte systemId, byte componentId,
-            bool includeSignalMark, byte sequenceNumber = 1)
+        public byte[] SerializeMessage(UasMessage msg, bool includeSignalMark, byte sequenceNumber = 1)
         {
             byte mark = includeSignalMark ? PacketSignalByte : (byte)0;
 
             return MavLinkPacket.GetBytesForMessage(
-                      msg, systemId, componentId, sequenceNumber, mark);
+                      msg, sequenceNumber, mark);
         }
 
 

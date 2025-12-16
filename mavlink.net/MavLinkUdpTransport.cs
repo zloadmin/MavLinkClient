@@ -163,15 +163,15 @@ namespace MavLinkNet
         private void SendMavlinkMessage(IPEndPoint ep, UasMessage msg)
         {
             // Console.WriteLine("SendMavlinkMessage");
-            byte[] buffer = mMavLink.SerializeMessage(msg, MavlinkSystemId, MavlinkComponentId, true, sequenceNumber++);
+            byte[] buffer = mMavLink.SerializeMessage(msg, true, sequenceNumber++);
             // if(msg.MessageId)
-            if (msg.MessageId == 76)
-            {
-                string hex = BitConverter.ToString(buffer);
-                Console.WriteLine(hex);
+            // if (msg.MessageId == 76)
+            // {
+                // string hex = BitConverter.ToString(buffer);
+                // Console.WriteLine(hex);
                 // UasLocalPositionNed pos = (UasLocalPositionNed)msg;
                 // Console.WriteLine("Pos TimeBootMs "  + pos.TimeBootMs);    
-            }
+            // }
             
             mUdpClient.Send(buffer, buffer.Length, ep);
         }
