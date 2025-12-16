@@ -84,30 +84,9 @@ namespace MavLinkNet
 
             if (result.IsValidCrc())
             {
-                // Console.WriteLine("Message ID " + result.MessageId);
-                // Console.WriteLine("Message ID byte 0 " + result.MessageIdBytes[0]);
-                // Console.WriteLine("Message ID byte 1 " + result.MessageIdBytes[1]);
-                // Console.WriteLine("Message ID byte 2 " + result.MessageIdBytes[2]);
-
-                
-
-                // byte msgId = (byte)(MessageId & 0xFF);
-                // Console.WriteLine("Message id simple " + MessageId);
-                // Console.WriteLine("Message converted " + msgId);
-                // try {
-                    // string hexString = Convert.ToHexString(result.MessageIdBytes);
-                    // Console.WriteLine("Message ID HEX "  + hexString);
-                    // Console.WriteLine("PayLoadLength " + result.PayLoadLength);
-                    result.DeserializeMessage();
-                // } catch (Exception ex) {
-                //     string hexString = Convert.ToHexString(result.MessageIdBytes);
-                //     Console.WriteLine("Message ID HEX "  + hexString);
-                //     Console.WriteLine("PayLoadLength " + result.PayLoadLength);
-                //     Console.WriteLine("Cannot DeserializeMessage ID " + result.MessageId);
-                // }
+                result.DeserializeMessage();
             } else {
-                // Console.WriteLine(result.MessageId);
-                Console.WriteLine("NOT VALID CRC message ID" + result.MessageId);
+                // Console.WriteLine("NOT VALID CRC message ID" + result.MessageId);
             }
 
             return result;

@@ -37,7 +37,7 @@ namespace MavLinkNet
     /// </remarks>
     public class MavLinkAsyncWalker: MavLinkGenericPacketWalker
     {
-        public const int DefaultCircularBufferSize = 4096 *2;
+        public const int DefaultCircularBufferSize = 4096 * 4;
 
         private BlockingCircularStream mProcessStream;
 
