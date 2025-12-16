@@ -10748,18 +10748,18 @@ namespace MavLinkNet
         /// <summary>
         /// System which should execute the command
         /// </summary>
-        // public byte TargetSystem {
-        //     get { return mTargetSystem; }
-        //     set { mTargetSystem = value; NotifyUpdated(); }
-        // }
-        //
-        // /// <summary>
-        // /// Component which should execute the command, 0 for all components
-        // /// </summary>
-        // public byte TargetComponent {
-        //     get { return mTargetComponent; }
-        //     set { mTargetComponent = value; NotifyUpdated(); }
-        // }
+        public byte TargetSystem {
+            get { return mTargetSystem; }
+            set { mTargetSystem = value; NotifyUpdated(); }
+        }
+        
+        /// <summary>
+        /// Component which should execute the command, 0 for all components
+        /// </summary>
+        public byte TargetComponent {
+            get { return mTargetComponent; }
+            set { mTargetComponent = value; NotifyUpdated(); }
+        }
 
         /// <summary>
         /// 0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)
@@ -10888,8 +10888,8 @@ namespace MavLinkNet
         private float mParam6;
         private float mParam7;
         private MavCmd mCommand;
-        // private byte mTargetSystem;
-        // private byte mTargetComponent;
+        private byte mTargetSystem;
+        private byte mTargetComponent;
         private byte mConfirmation;
     }
 

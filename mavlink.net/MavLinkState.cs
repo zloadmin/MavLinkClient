@@ -32,7 +32,7 @@ namespace MavLinkNet
     public class MavLinkState
     {
         private Dictionary<string, UasMessage> mState = new Dictionary<string, UasMessage>();
-        private List<UasMessage> mHeartBeatMessages = new List<UasMessage>();
+        public List<UasMessage> mHeartBeatMessages = new List<UasMessage>();
 
         public MavLinkState()
         {
@@ -69,9 +69,9 @@ namespace MavLinkNet
             if (mHeartBeatMessages.Count == 0)
             {
                 mHeartBeatMessages.Add(Get("Heartbeat"));
-                mHeartBeatMessages.Add(Get("SysStatus"));
-                mHeartBeatMessages.Add(Get("LocalPositionNed"));
-                mHeartBeatMessages.Add(Get("Attitude"));
+                // mHeartBeatMessages.Add(Get("SysStatus"));
+                // mHeartBeatMessages.Add(Get("LocalPositionNed"));
+                // mHeartBeatMessages.Add(Get("Attitude"));
             }
 
             return mHeartBeatMessages;

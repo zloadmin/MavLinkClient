@@ -9,6 +9,8 @@ namespace MavLinkNet
     {
         static MavLinkUdpTransport udpTransport;
 
+        
+        
 
         static void Main()
         {
@@ -16,107 +18,84 @@ namespace MavLinkNet
             udpTransport = new MavLinkUdpTransport();
             // udpTransport.OnPacketReceived += OnPacketReceived;
             udpTransport.Initialize();
-            // udpTransport.BeginHeartBeatLoop();
-            UasCommandLong arm = new UasCommandLong();
-            
-            arm.Param1 = 1;
-            arm.Param2 = 0;
-            arm.Param3 = 0;
-            arm.Param4 = 0;
-            arm.Param5 = 0;
-            arm.Param6 = 0;
-            arm.Param7 = 0;
-            arm.Command = MavCmd.ComponentArmDisarm;
-            arm.Confirmation = 1;
-            // BinaryWriter s;
-            // arm.DeserializeBody(s, out s);
-            Console.WriteLine("ARM");
-            udpTransport.SendMessage(arm);
-            
-            
-            Thread.Sleep(200);
-            
-            UasSetMode offboard = new UasSetMode();
-            offboard.CustomMode = 6;
-            offboard.BaseMode = 1;
-            offboard.TargetSystem = 1;
-            Console.WriteLine("OFFBOARD");
-            udpTransport.SendMessage(offboard);
-            Thread.Sleep(200);
+            udpTransport.HeartBeatUpdateRateMs = 100;
+            udpTransport.BeginHeartBeatLoop();
+            // UasHeartbeat heartbeat = new UasHeartbeat();
 
-            // while (true)
-            // {
-            //     udpTransport.SendMessage(arm);
-            //     udpTransport.SendMessage(offboard);
-            //     
-            // }
-            // UasSetPositionTargetLocalNed navigate = new UasSetPositionTargetLocalNed();
-            // navigate.TimeBootMs = DateTimeToUInt32Timestamp(DateTime.UtcNow);
-            // navigate.CoordinateFrame = MavFrame.BodyNed;
-            // navigate.X = 0.0f;
-            // navigate.Y = 0.0f;
-            // navigate.Z = -1.0f;
-            // navigate.Vx = 0.0f;
-            // navigate.Vy = 0.0f;
-            // navigate.Vz = 0.0f;
-            // navigate.Afx = 0.0f;
-            // navigate.Afy = 0.0f;
-            // navigate.Afz = 0.0f;
-            // while (true)
-            // {
-            //     udpTransport.SendMessage(navigate);
-            //     Thread.Sleep(1000);
-            // }
+
+            while (true)
+            {
+                UasCommandLong arm = new UasCommandLong();
+                arm.Param1 = 1;
+                arm.Param2 = 0;
+                arm.Param3 = 0;
+                arm.Param4 = 0;
+                arm.Param5 = 0;
+                arm.Param6 = 0;
+                arm.Param7 = 0;
+                arm.Command = MavCmd.ComponentArmDisarm;
+                arm.TargetSystem = 255;
+                arm.TargetComponent = 0;
+                arm.Confirmation = 1;
+                udpTransport.SendMessage(arm);
+                Thread.Sleep(1000);
+            }
             
-            // Console.ReadLine();
-            
-            // UasParamValue takeOff = new UasParamValue();
-            // takeOff.ParamId[0] = (char)0; 
-            // takeOff.ParamId[1] = (char)0; 
-            // takeOff.ParamId[2] = (char)0; 
-            // takeOff.ParamId[7] = (char)1.0;
-            // udpTransport.SendMessage(takeOff);
-            // Console.ReadLine();
-            
-            // int Iteration = 0;
-            // while (true)
-            // {
-            //     UasStatustext statustext = new UasStatustext();
-            //     statustext.Text = getStringAsFiftyByteArray("Iteration " + Iteration);
-            //     udpTransport.SendMessage(statustext);
-            //     Thread.Sleep(1000);
-            //     Iteration++;
-            //     Console.WriteLine("Iteration " + Iteration);
-            // }
-            
-            // UasStatustext text = new UasStatustext();
-            //
-            // char[] mText = new char[50];
-            //
-            // while (true)
-            // {
-            //     udpTransport.SendMessage(takeOff);
-            //     Thread.Sleep(1000);
-            // }
-            //
-            // Console.ReadLine();
-            //
         }
 
         static char[] getStringAsFiftyByteArray(string source)
         {
-            char[] buffer = new char[50]; int i = 0;
+            char[] buffer = new char[50];
+            int i = 0;
             foreach (char c in source)
             {
                 buffer[i++] = c;
             }
+
             return buffer;
         }
 
         static void OnPacketReceived(object sender, MavLinkPacket packet)
         {
-            Console.WriteLine("Packet received MessageId " + packet.MessageId);   
+             
+            // UasHeartbeat Heartbeat = (UasHeartbeat)packet.Message;
+            // Heartbeat.Type = MavType.Gcs;
+            // Heartbeat.Autopilot = MavAutopilot.Generic;
+            // Heartbeat.BaseMode = 0;
+            // Heartbeat.CustomMode = 0;
+            // Heartbeat.SystemStatus = MavState.Active;
+            // Heartbeat.MavlinkVersion = (byte)3;
+            
+            // Heartbeat.BaseMode = MavModeFlag.CustomModeEnabled;
+            // Heartbeat.Autopilot = MavAutopilot.Invalid;
+            // Heartbeat.
+            // Console.Write("Heartbeat.Autopilot" + Heartbeat.Autopilot.ToString());
+            // Console.Write("Heartbeat.BaseMode" + Heartbeat.BaseMode.ToString());
+            // Console.Write("Heartbeat.CustomMode" + Heartbeat.CustomMode.ToString());
+            // Console.Write("Heartbeat.MavlinkVersion" + Heartbeat.MavlinkVersion.ToString());
+            // Console.Write("Heartbeat.SystemStatus" + Heartbeat.SystemStatus.ToString());
+            // Console.Write("Heartbeat.Type" + Heartbeat.Type.ToString());
+            // Console.Write("Heartbeat.SystemId" + packet.SystemId);
+            // Console.Write("Heartbeat.ComponentId" + packet.ComponentId);
+            //
+            // UasSysStatus SysStatus = (UasSysStatus)packet.Message;
+            // Console.WriteLine("OnboardControlSensorsPresent " + SysStatus.OnboardControlSensorsPresent.ToString());
+            // Console.WriteLine("OnboardControlSensorsEnabled " + SysStatus.OnboardControlSensorsEnabled.ToString());
+            // Console.WriteLine("OnboardControlSensorsHealth " + SysStatus.OnboardControlSensorsHealth.ToString());
+            // Console.WriteLine("Load " + SysStatus.Load.ToString());
+            // Console.WriteLine("VoltageBattery " + SysStatus.VoltageBattery.ToString());
+            // Console.WriteLine("CurrentBattery " + SysStatus.CurrentBattery.ToString());
+            // Console.WriteLine("DropRateComm " + SysStatus.DropRateComm.ToString());
+            // Console.WriteLine("ErrorsComm " + SysStatus.ErrorsComm.ToString());
+            // Console.WriteLine("ErrorsCount1 " + SysStatus.ErrorsCount1.ToString());
+            // Console.WriteLine("ErrorsCount2 " + SysStatus.ErrorsCount2.ToString());
+            // Console.WriteLine("ErrorsCount3 " + SysStatus.ErrorsCount3.ToString());
+            // Console.WriteLine("ErrorsCount4 " + SysStatus.ErrorsCount4.ToString());
+            // Console.WriteLine("BatteryRemaining " + SysStatus.BatteryRemaining.ToString());
+
+            // Console.WriteLine("Packet received MessageId " + packet.Message.ToString());   
         }
+
         // static void OnReceptionEnded(object? sender, EventArgs e)
         // {
         //     Console.WriteLine("Packet received");   
@@ -125,13 +104,13 @@ namespace MavLinkNet
         {
             // Unix epoch starts at 1970-01-01 00:00:00 UTC
             DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    
+
             // Calculate the time difference and get total seconds
             TimeSpan timeSpan = dateTime.ToUniversalTime() - epoch;
-    
+
             // Convert to uint (throws an exception for negative values or overflow)
             // The maximum value for a UInt32 Unix timestamp is in the year 2106
-            return (uint)timeSpan.TotalSeconds; 
+            return (uint)timeSpan.TotalSeconds;
         }
     }
 }

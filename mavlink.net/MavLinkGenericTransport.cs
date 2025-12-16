@@ -7,7 +7,7 @@ namespace MavLinkNet
 {
     public abstract class MavLinkGenericTransport: IDisposable
     {
-        public byte MavlinkSystemId = 0xFF;
+        public byte MavlinkSystemId = 255;
         public byte MavlinkComponentId = 0x00;
         public MavLinkState UavState = new MavLinkState();
 

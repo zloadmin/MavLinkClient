@@ -33,7 +33,7 @@ namespace MavLinkNet
     public class MavLinkUdpTransport: MavLinkGenericTransport
     {
         public int UdpListeningPort = 14550;  // Any available port
-        public int UdpTargetPort = 14555;
+        public int UdpTargetPort = 14580;
         public IPAddress TargetIpAddress = new IPAddress(new byte[] { 172,16,8,128 });
         public int HeartBeatUpdateRateMs = 1000;
         
@@ -44,6 +44,7 @@ namespace MavLinkNet
         private MavLinkAsyncWalker mMavLink = new MavLinkAsyncWalker();
         private UdpClient mUdpClient;
         private bool mIsActive = true;
+        private byte sequenceNumber = 0x00;
 
 
         public override void Initialize()
@@ -162,9 +163,16 @@ namespace MavLinkNet
         private void SendMavlinkMessage(IPEndPoint ep, UasMessage msg)
         {
             // Console.WriteLine("SendMavlinkMessage");
-            byte[] buffer = mMavLink.SerializeMessage(msg, MavlinkSystemId, MavlinkComponentId, true);
-            string hex = BitConverter.ToString(buffer);
-            Console.WriteLine(hex);
+            byte[] buffer = mMavLink.SerializeMessage(msg, MavlinkSystemId, MavlinkComponentId, true, sequenceNumber++);
+            // if(msg.MessageId)
+            if (msg.MessageId == 76)
+            {
+                string hex = BitConverter.ToString(buffer);
+                Console.WriteLine(hex);
+                // UasLocalPositionNed pos = (UasLocalPositionNed)msg;
+                // Console.WriteLine("Pos TimeBootMs "  + pos.TimeBootMs);    
+            }
+            
             mUdpClient.Send(buffer, buffer.Length, ep);
         }
 
