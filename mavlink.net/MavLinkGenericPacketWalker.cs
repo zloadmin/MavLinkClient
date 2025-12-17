@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MavLinkNet
 {
-    public delegate void PacketReceivedDelegate(object sender, MavLinkPacket packet);
+    public delegate void PacketReceivedDelegate(object sender, MavLinkPacketBase packet);
 
 
     public abstract class MavLinkGenericPacketWalker
@@ -54,14 +54,14 @@ namespace MavLinkNet
         // __ Impl ____________________________________________________________
 
 
-        protected void NotifyPacketReceived(MavLinkPacket packet)
+        protected void NotifyPacketReceived(MavLinkPacketBase packet)
         {
             if (packet == null || PacketReceived == null) return;
 
             PacketReceived(this, packet);
         }
 
-        protected void NotifyPacketDiscarded(MavLinkPacket packet)
+        protected void NotifyPacketDiscarded(MavLinkPacketBase packet)
         {
             if (packet == null || PacketDiscarded == null) return;
 

@@ -76,12 +76,12 @@ namespace MavLinkNet
             
         }
 
-        internal virtual void SerializeBody(BinaryWriter s)
+        internal virtual void SerializeBody(BinaryWriter s, WireProtocolVersion wireProtocolVersion = WireProtocolVersion.v10)
         { 
         
         }
 
-        internal virtual void DeserializeBody(BinaryReader stream)
+        internal virtual void DeserializeBody(BinaryReader stream, WireProtocolVersion wireProtocolVersion = WireProtocolVersion.v10)
         { 
         
         }
@@ -92,7 +92,8 @@ namespace MavLinkNet
         }
 
 
-        protected byte mMessageId;
+        // protected byte mMessageId; v1
+        protected uint mMessageId;
         protected UasMessageMetadata mMetadata;
         protected byte mSystemId = 255;
         protected byte mComponentId = 0x00;

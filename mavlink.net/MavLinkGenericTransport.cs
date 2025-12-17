@@ -9,6 +9,7 @@ namespace MavLinkNet
     {
         public byte MavlinkSystemId = 255;
         public byte MavlinkComponentId = 0x00;
+        public byte PacketSignalByte = byte.MinValue;
         public MavLinkState UavState = new MavLinkState();
 
         public event PacketReceivedDelegate OnPacketReceived;
@@ -23,7 +24,7 @@ namespace MavLinkNet
         // __ MavLink events __________________________________________________
 
 
-        protected void HandlePacketReceived(object sender, MavLinkPacket e)
+        protected void HandlePacketReceived(object sender, MavLinkPacketBase e)
         {
             if (OnPacketReceived != null) OnPacketReceived(sender, e);
         }

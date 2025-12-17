@@ -22,8 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 using System;
-using System.IO;
-using System.Threading;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 
 namespace MavLinkNet
 {
@@ -37,6 +39,14 @@ namespace MavLinkNet
     /// </remarks>
     public class MavLinkAsyncWalker: MavLinkGenericPacketWalker
     {
+        public static readonly IList<byte> PacketSignalBytes = new ReadOnlyCollection<byte>
+        (new List<byte>
+        {
+            0xFE,
+            0xFD
+        });
+        public static byte PacketSignalByte = byte.MinValue;
+        
         public const int DefaultCircularBufferSize = 4096 * 4;
 
         private BlockingCircularStream mProcessStream;
@@ -56,7 +66,7 @@ namespace MavLinkNet
         public override void ProcessReceivedBytes(byte[] buffer, int start, int length)
         {
             string hex = BitConverter.ToString(buffer);
-            // Console.WriteLine(hex);
+            Console.WriteLine(hex);
             mProcessStream.Write(buffer, 0, buffer.Length);
         }
 
@@ -66,14 +76,29 @@ namespace MavLinkNet
 
         private void PacketProcessingWorker(object state)
         {
-            using (BinaryReader reader = MavLinkPacket.GetBinaryReader(mProcessStream))
+            using (BinaryReader reader = MavLinkPacketBase.GetBinaryReader(mProcessStream))
             {
                 while (true)
                 {
-                    SyncStream(reader);
-                    MavLinkPacket packet = MavLinkPacket.Deserialize(reader, 0);
+                    MavLinkPacketBase packet = null;
+                    switch (SyncStream(reader))
+                    {
+                        case 0xFE:
+                            PacketSignalByte = 0xFE;
+                            packet = MavLinkPacketV10.Deserialize(reader, 0);                             
+                            break;
 
-                    if (packet.IsValid)
+                        case 0xFD:
+                            PacketSignalByte = 0xFD;
+                            packet = MavLinkPacketV20.Deserialize(reader, 0);
+                            break;
+
+                        default:
+                            break;
+                    }
+                    
+
+                    if (packet != null && packet.IsValid)
                     {
                         NotifyPacketReceived(packet);
                     }
@@ -85,12 +110,16 @@ namespace MavLinkNet
             }
         }
 
-        private void SyncStream(BinaryReader s)
+        private byte SyncStream(BinaryReader s)
         {
-            while (s.ReadByte() != PacketSignalByte)
+            byte delimiter = byte.MinValue;
+            do
             {
                 // Skip bytes until a packet start is found
-            }
+                delimiter = s.ReadByte();
+            } while (!PacketSignalBytes.Contains(delimiter));
+
+            return delimiter;
         }
     }
 }
