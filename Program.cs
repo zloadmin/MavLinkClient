@@ -16,7 +16,6 @@ namespace MavLinkNet
 
             Thread.Sleep(1000);
             
-            
             var sw = Stopwatch.StartNew();
             while (sw.Elapsed < TimeSpan.FromSeconds(5))
             {
@@ -34,7 +33,7 @@ namespace MavLinkNet
         private static void InitConnection()
         {
             _udpTransport = new MavLinkUdpTransport();
-            _udpTransport.OnPacketReceived += OnPacketReceived;
+            // _udpTransport.OnPacketReceived += OnPacketReceived;
             _udpTransport.Initialize();
             _udpTransport.HeartBeatUpdateRateMs = 100;
             _udpTransport.BeginHeartBeatLoop();
@@ -81,8 +80,7 @@ namespace MavLinkNet
             {
                 CustomMode = 0x060000,
                 TargetSystem = 0x01,
-                BaseMode = MavMode. 
-                // BaseMode = 0x01,
+                BaseMode = MavMode.Custom,
                 SystemId = 0x01,
                 ComponentId = 0xF0, // Component ID (sender = 240)
             };
@@ -104,7 +102,7 @@ namespace MavLinkNet
                 Afz = 0.0f,
                 Yaw = 0.0f,
                 YawRate = 0.0f,
-                // TypeMask = 0x09F8, // ignore velocity, accel, yaw_rate
+                TypeMask = PositionTargetTypemask.CustomIgnore, // ignore velocity, accel, yaw_rate
                 TargetSystem = 0x01,
                 TargetComponent = 0x01,
                 CoordinateFrame = MavFrame.LocalNed

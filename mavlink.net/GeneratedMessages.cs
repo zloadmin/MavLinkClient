@@ -325,6 +325,9 @@ namespace MavLinkNet
 
         /// <summary> System is not ready to fly, booting, calibrating, etc. No flag is set. </summary>
         Preflight = 0, 
+        
+        /// <summary> MAV_MODE_FLAG_CUSTOM_MODE_ENABLED
+        Custom = 1, 
 
         /// <summary> System is allowed to be active, under assisted RC control. </summary>
         StabilizeDisarmed = 80, 
@@ -2388,7 +2391,12 @@ namespace MavLinkNet
         YawIgnore = 1024, 
 
         /// <summary> Ignore yaw rate </summary>
-        YawRateIgnore = 2048 };
+        YawRateIgnore = 2048,
+        
+        /// <summary> Ignore velocity, accel, yaw_rate </summary>
+        CustomIgnore = 2552 
+        
+    };
 
     /// <summary>
     /// Airborne status of UAS.
@@ -11986,8 +11994,8 @@ namespace MavLinkNet
             s.Write(mParam6);
             s.Write(mParam7);
             s.Write((UInt16)mCommand);
-            s.Write(mTargetSystem);
-            s.Write(mTargetComponent);
+            // s.Write(mTargetSystem);
+            // s.Write(mTargetComponent);
             s.Write(mConfirmation);
         }
 
@@ -12001,8 +12009,8 @@ namespace MavLinkNet
             this.mParam6 = s.ReadSingle();
             this.mParam7 = s.ReadSingle();
             this.mCommand = (MavCmd)s.ReadUInt16();
-            this.mTargetSystem = s.ReadByte();
-            this.mTargetComponent = s.ReadByte();
+            // this.mTargetSystem = s.ReadByte();
+            // this.mTargetComponent = s.ReadByte();
             this.mConfirmation = s.ReadByte();
         }
 

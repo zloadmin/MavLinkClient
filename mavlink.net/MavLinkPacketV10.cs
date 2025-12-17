@@ -161,11 +161,15 @@ namespace MavLinkNet
 
         public override void Serialize(BinaryWriter w)
         {
+            byte[] fourBytes = BitConverter.GetBytes(MessageId);
+            byte[] threeBytes = new byte[3];
+            Array.Copy(fourBytes, 0, threeBytes, 0, 3);
+            
             w.Write(PayLoadLength);
             w.Write(PacketSequenceNumber);
             w.Write(SystemId);
             w.Write(ComponentId);
-            w.Write(MessageId);
+            w.Write(threeBytes);
             w.Write(Payload);
             w.Write(Checksum1);
             w.Write(Checksum2);
