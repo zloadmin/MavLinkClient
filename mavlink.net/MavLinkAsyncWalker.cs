@@ -65,8 +65,8 @@ namespace MavLinkNet
         /// <param name="buffer">The buffer to process</param>
         public override void ProcessReceivedBytes(byte[] buffer, int start, int length)
         {
-            string hex = BitConverter.ToString(buffer);
-            Console.WriteLine(hex);
+            // string hex = BitConverter.ToString(buffer);
+            // Console.WriteLine(hex);
             mProcessStream.Write(buffer, 0, buffer.Length);
         }
 

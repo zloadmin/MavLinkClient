@@ -33,7 +33,7 @@ namespace MavLinkNet
         private static void InitConnection()
         {
             _udpTransport = new MavLinkUdpTransport();
-            // _udpTransport.OnPacketReceived += OnPacketReceived;
+            _udpTransport.OnPacketReceived += OnPacketReceived;
             _udpTransport.Initialize();
             _udpTransport.HeartBeatUpdateRateMs = 100;
             _udpTransport.BeginHeartBeatLoop();
@@ -112,7 +112,25 @@ namespace MavLinkNet
         
         static void OnPacketReceived(object sender, MavLinkPacketBase packet)
         {
+            switch(packet.MessageId) {
+                case 31:
+                    PrintUasAttitudeQuaternion((UasAttitudeQuaternion)packet.Message);
+                break;
+
+            }
               
+        }
+         private static void PrintUasAttitudeQuaternion(UasAttitudeQuaternion message)
+        {
+            Console.Clear();
+            Console.WriteLine("TimeBootMs: " + message.TimeBootMs);
+            Console.WriteLine("Q1: " + message.Q1);
+            Console.WriteLine("Q2: " + message.Q2);
+            Console.WriteLine("Q3: " + message.Q3);
+            Console.WriteLine("Q4: " + message.Q4);
+            Console.WriteLine("Rollspeed: " + message.Rollspeed);
+            Console.WriteLine("Pitchspeed: " + message.Pitchspeed);
+            Console.WriteLine("Yawspeed: " + message.Yawspeed);
         }
 
         

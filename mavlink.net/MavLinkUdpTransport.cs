@@ -164,8 +164,8 @@ namespace MavLinkNet
         {
             // Console.WriteLine("SendMavlinkMessage");
             byte[] buffer = mMavLink.SerializeMessage(msg, true, sequenceNumber++);
-            string hexString = BitConverter.ToString(buffer);
-            Console.WriteLine(msg.MessageId + " - " + hexString);
+            // string hexString = BitConverter.ToString(buffer);
+            // Console.WriteLine(msg.MessageId + " - " + hexString);
             mUdpClient.Send(buffer, buffer.Length, ep);
         }
 
