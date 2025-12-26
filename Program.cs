@@ -8,129 +8,112 @@ namespace MavLinkNet
 {
     internal class Program
     {
-        private static MavLinkUdpTransport _udpTransport;
+        const string REMOTE_HOST = "172.16.8.128";
+        const int REMOTE_PORT = 5555;
+        const int LOCAL_PORT = 4560;
+        
 
         static void Main()
         {
-            InitConnection();
+            ProxyServer();
 
-            Thread.Sleep(1000);
-            
-            var sw = Stopwatch.StartNew();
-            while (sw.Elapsed < TimeSpan.FromSeconds(5))
+        }
+
+        static async Task ProxyServer()
+        {
+            var listener = new TcpListener(IPAddress.Any, LOCAL_PORT);
+            listener.Start();
+
+            Console.WriteLine($"[PROXY] Listening on TCP {LOCAL_PORT}");
+            Console.WriteLine($"[PROXY] Forwarding to {REMOTE_HOST}:{REMOTE_PORT}");
+
+            while (true)
             {
-                _udpTransport.SendMessage(GetDisArmMessage());
-                _udpTransport.SendMessage(GetOffboardModeMessage());
-                _udpTransport.SendMessage(GetTakeOffMessage());
-                Thread.Sleep(100);
+                var px4 = await listener.AcceptTcpClientAsync();
+                Console.WriteLine("[PROXY] PX4 connected by port: " + LOCAL_PORT);
+
+                TcpClient gazebo = await WaitForRemoteServerAsync();
+                Console.WriteLine("[PROXY] Gazebo connected by port: " + REMOTE_PORT);
+
+                _ = ProxyPipe(gazebo, px4, "gazebo → px4");
+                _ = ProxyPipe(px4, gazebo, "px4 → gazebo");
             }
-            Thread.Sleep(3000);
-            _udpTransport.SendMessage(GetLandMessage());
-            Thread.Sleep(1000);
-            
         }
 
-        private static void InitConnection()
-        {
-            _udpTransport = new MavLinkUdpTransport();
-            _udpTransport.OnPacketReceived += OnPacketReceived;
-            _udpTransport.Initialize();
-            _udpTransport.HeartBeatUpdateRateMs = 100;
-            _udpTransport.BeginHeartBeatLoop();
-        }
 
-        private static UasCommandLong GetDisArmMessage()
+        static BinaryReader CreateReader(byte[] buffer, int offset, int length)
         {
-            return new UasCommandLong
-            {
-                Param1 = 1,
-                Param2 = 0,
-                Param3 = 0,
-                Param4 = 0,
-                Param5 = 0,
-                Param6 = 0,
-                Param7 = 0,
-                Command = MavCmd.ComponentArmDisarm,
-                TargetSystem = 255,
-                TargetComponent = 0,
-                Confirmation = 1
-            };
+            var ms = new MemoryStream(buffer, offset, length);
+            return new BinaryReader(ms);
         }
-        private static UasCommandLong GetLandMessage()
+        
+        static void PrintMessage(byte[] data, int length, string tag)
         {
-            return new UasCommandLong
-            {
-                Param1 = 0,
-                Param2 = 0,
-                Param3 = 0,
-                Param4 = 0,
-                Param5 = 0,
-                Param6 = 0,
-                Param7 = 0,
-                Command = MavCmd.NavLand,
-                TargetSystem = 255,
-                TargetComponent = 0,
-                Confirmation = 1
-            };
-        }
-
-        private static UasSetMode GetOffboardModeMessage()
-        {
-            return new UasSetMode
-            {
-                CustomMode = 0x060000,
-                TargetSystem = 0x01,
-                BaseMode = MavMode.Custom,
-                SystemId = 0x01,
-                ComponentId = 0xF0, // Component ID (sender = 240)
-            };
-        }
-
-        private static UasSetPositionTargetLocalNed GetTakeOffMessage()
-        {
-            return new UasSetPositionTargetLocalNed
-            {
-                TimeBootMs = unchecked((uint)Environment.TickCount),
-                X = 0.0f,
-                Y = 0.0f,
-                Z = -1.0f,
-                Vx = 0.0f,
-                Vy = 0.0f,
-                Vz = 0.0f,
-                Afx = 0.0f,
-                Afy = 0.0f,
-                Afz = 0.0f,
-                Yaw = 0.0f,
-                YawRate = 0.0f,
-                TypeMask = PositionTargetTypemask.CustomIgnore, // ignore velocity, accel, yaw_rate
-                TargetSystem = 0x01,
-                TargetComponent = 0x01,
-                CoordinateFrame = MavFrame.LocalNed
-            };
+            BinaryReader reader = CreateReader(data, 0, length);
+            MavLinkPacketV20 packet = MavLinkPacketV20.Deserialize(reader, 0);
+            Console.WriteLine("Message ID " + packet.MessageId);
         }
         
         
-        static void OnPacketReceived(object sender, MavLinkPacketBase packet)
-        {
-            switch(packet.MessageId) {
-                case 31:
-                    PrintUasAttitudeQuaternion((UasAttitudeQuaternion)packet.Message);
-                break;
 
-            }
-              
-        }
-         private static void PrintUasAttitudeQuaternion(UasAttitudeQuaternion message)
+        static void PrintHex(byte[] data, int length, string tag)
         {
-            Console.Clear();
-            Console.WriteLine("TimeBootMs: " + message.TimeBootMs);
-            Console.WriteLine("Q1: " + message.Q1);
-            Console.WriteLine("Q2: " + message.Q2);
-            Console.WriteLine("Q3: " + message.Q3);
-            Console.WriteLine("Q4: " + message.Q4);
-            Console.WriteLine("Rollspeed: " + message.Rollspeed);
-            Console.WriteLine("Pitchspeed: " + message.Pitchspeed);
-            Console.WriteLine("Yawspeed: " + message.Yawspeed);
+            Console.Write($"[{tag}] {length} bytes: ");
+            for (int i = 0; i < length; i++)
+                Console.Write($"{data[i]:X2} ");
+            Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Ждём, пока на REMOTE_HOST:REMOTE_PORT появится TCP сервер
+        /// </summary>
+        static async Task<TcpClient> WaitForRemoteServerAsync()
+        {
+            while (true)
+            {
+                try
+                {
+                    var server = new TcpClient();
+                    await server.ConnectAsync(REMOTE_HOST, REMOTE_PORT);
+                    return server;
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine($"[PROXY] Waiting for PX4 TCP {REMOTE_HOST}:{REMOTE_PORT} ...");
+                    await Task.Delay(500); // 0.5 секунды
+                }
+            }
+        }
+
+        static async Task ProxyPipe(TcpClient from, TcpClient to, string tag)
+        {
+            var fromStream = from.GetStream();
+            var toStream = to.GetStream();
+
+            byte[] buffer = new byte[4096];
+
+            try
+            {
+                while (true)
+                {
+                    int read = await fromStream.ReadAsync(buffer, 0, buffer.Length);
+                    if (read <= 0) break;
+                    
+                    PrintHex(buffer, read, tag);
+                    PrintMessage(buffer, read, tag);
+                    await toStream.WriteAsync(buffer, 0, read);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{tag}] ERROR: {ex.Message}");
+            }
+            finally
+            {
+                from.Close();
+                to.Close();
+                Console.WriteLine($"[{tag}] Connection closed");
+            }
         }
 
         

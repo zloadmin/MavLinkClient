@@ -71,7 +71,7 @@ namespace MavLinkNet
 
             return result;
         }
-
+        
         public override int GetPacketSize()
         {
             return PacketOverheadNumBytes + PayLoadLength;

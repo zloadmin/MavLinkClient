@@ -34,6 +34,7 @@ namespace MavLinkNet
         public byte IncompatibilityFlags;
         public byte CompatibilityFlags;
 
+       
         // __ Deserialization _________________________________________________
 
         /*
