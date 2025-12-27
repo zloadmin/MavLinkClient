@@ -4,27 +4,53 @@ using System.Net.Sockets;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MavLinkNet
 {
-    
     internal class Program
     {
         const string REMOTE_HOST = "172.16.8.128";
         const int REMOTE_PORT = 5555;
         const int LOCAL_PORT = 4560;
         static public int packetId = 0;
-        
-        
-        
+        static private MavLinkTcpServerTransport _tcpServer;
 
-        static async Task Main()
+
+        static void Main()
         {
-            
-            
+            _tcpServer = new MavLinkTcpServerTransport();
+            _tcpServer.OnPacketReceived += OnPacketReceived;
+            _tcpServer.Initialize();
+            while (true)
+            {
+            }
+        }
+
+        static void OnPacketReceived(object sender, MavLinkPacketBase packet)
+        {
+            UasMessage message = packet.Message;
+            UasMessagePrinter.Print(message);
+            // Console.Write("Message " + message.GetType().Name + ". PARAMETERS: ");
+            // foreach (UasFieldMetadata uasFieldMetadata in packet.Message.GetMetadata().Fields)
+            // {
+            //     string propertyName = uasFieldMetadata.Name;
+            //     Type type = message.GetType();
+            //     PropertyInfo propertyInfo = type.GetProperty(propertyName);
+            //     if (propertyInfo != null)
+            //     {
+            //         object propertyValue = propertyInfo.GetValue(message, null);
+            //         Console.Write($"{propertyName} is value: {propertyValue}. ");
+            //     }
+            // }
+            // Console.WriteLine();
+        }
+
+        static async Task ProxyServer()
+        {
             var listener = new TcpListener(IPAddress.Any, LOCAL_PORT);
-            
-            
+
+
             listener.Start();
 
             Console.WriteLine($"[PROXY] Listening on TCP {LOCAL_PORT}");
@@ -33,7 +59,7 @@ namespace MavLinkNet
             while (true)
             {
                 var px4 = await listener.AcceptTcpClientAsync();
-                
+
                 Console.WriteLine("[PROXY] PX4 connected by port: " + LOCAL_PORT);
                 TcpClient gazebo = await WaitForRemoteServerAsync();
                 Console.WriteLine("[PROXY] Gazebo connected by port: " + REMOTE_PORT);
@@ -41,35 +67,7 @@ namespace MavLinkNet
                 _ = ProxyPipe(gazebo, px4, "gazebo → px4");
                 _ = ProxyPipe(px4, gazebo, "px4 → gazebo");
             }
-
         }
-        
-        
-        
-        static async Task ProxyServer()
-        {
-            // var listener = new TcpListener(IPAddress.Any, LOCAL_PORT);
-            // listener.Start();
-
-            // Console.WriteLine($"[PROXY] Listening on TCP {LOCAL_PORT}");
-            // Console.WriteLine($"[PROXY] Forwarding to {REMOTE_HOST}:{REMOTE_PORT}");
-
-            // while (true)
-            // {
-            //     var px4 = await listener.AcceptTcpClientAsync();
-            //     Console.WriteLine("[PROXY] PX4 connected by port: " + LOCAL_PORT);
-
-            //     TcpClient gazebo = await WaitForRemoteServerAsync();
-            //     Console.WriteLine("[PROXY] Gazebo connected by port: " + REMOTE_PORT);
-
-            //     _ = ProxyPipe(gazebo, px4, "gazebo → px4");
-            //     _ = ProxyPipe(px4, gazebo, "px4 → gazebo");
-            // }
-        }
-
-
-        
-        
 
         public static List<byte[]> Split(byte[] data)
         {
@@ -132,9 +130,6 @@ namespace MavLinkNet
 
             return packets;
         }
-        
-        
-        
 
         static void PrintHex(byte[] data, int length, string tag)
         {
@@ -144,6 +139,7 @@ namespace MavLinkNet
             //     Console.Write($"{data[i]:X2} ");
             // Console.WriteLine();
         }
+
         static void PrintMessage(byte[] data, int length, string tag)
         {
             // Console.WriteLine();
@@ -158,12 +154,10 @@ namespace MavLinkNet
                 MavlinkMessage msg = MavlinkMessage.Deserialize(messageHex);
                 Console.WriteLine($"[{tag}] Message ID: " + msg.MessageId);
             }
+
             Console.WriteLine();
         }
 
-        /// <summary>
-        /// Ждём, пока на REMOTE_HOST:REMOTE_PORT появится TCP сервер
-        /// </summary>
         static async Task<TcpClient> WaitForRemoteServerAsync()
         {
             while (true)
@@ -197,7 +191,7 @@ namespace MavLinkNet
                     if (read <= 0) break;
                     PrintHex(buffer, read, tag);
                     PrintMessage(buffer, read, tag);
-                    await toStream.WriteAsync(buffer, 0, read);   
+                    await toStream.WriteAsync(buffer, 0, read);
                 }
             }
             catch (Exception ex)
@@ -211,7 +205,5 @@ namespace MavLinkNet
                 Console.WriteLine($"[{tag}] Connection closed");
             }
         }
-        
     }
-    
 }

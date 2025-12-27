@@ -15028,6 +15028,8 @@ namespace MavLinkNet
             this.mControls[15] = s.ReadSingle();
             this.mMode = (MavMode)s.ReadByte();
         }
+        
+        
 
         protected override void InitMetadata()
         {

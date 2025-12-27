@@ -91,6 +91,14 @@ namespace MavLinkNet
 
         }
 
+        public string ToStringPayload()
+        {
+            return "NO_IMPL";
+        }
+        public string ToStringInfo()
+        {
+            return String.Format("Message {0}. ID: {1}. Payload: {2}", this.GetType().Name, MessageId, ToStringPayload()); 
+        }
 
         // protected byte mMessageId; v1
         protected uint mMessageId;
