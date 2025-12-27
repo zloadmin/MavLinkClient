@@ -3,7 +3,7 @@ namespace MavLinkNet;
 public class FlyDron
 {
     private static MavLinkUdpTransport _udpTransport;
-    private static MavLinkTcpTransport _tcpTransport;
+    // private static MavLinkTcpTransport _tcpTransport;
 
     static void Run()
     {
@@ -12,9 +12,9 @@ public class FlyDron
         // controls. 
         while (true)
         {
-            _tcpTransport.SendMessage(GetDisArmMessage());
-            _tcpTransport.SendMessage(GetOffboardModeMessage());
-            _tcpTransport.SendMessage(GetUasHilActuatorControls());
+            _udpTransport.SendMessage(GetDisArmMessage());
+            _udpTransport.SendMessage(GetOffboardModeMessage());
+            _udpTransport.SendMessage(GetUasHilActuatorControls());
             Thread.Sleep(100);
         }
     }
