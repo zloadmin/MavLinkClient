@@ -16784,7 +16784,7 @@ namespace MavLinkNet
 
         internal override void SerializeBody(BinaryWriter s, WireProtocolVersion wireProtocolVersion)
         {
-            s.Write(mTimeUsec);
+            s.Write(mTimeUsec); 
             s.Write(mXacc);
             s.Write(mYacc);
             s.Write(mZacc);
@@ -16809,15 +16809,16 @@ namespace MavLinkNet
             this.mZacc = s.ReadSingle();
             this.mXgyro = s.ReadSingle();
             this.mYgyro = s.ReadSingle();
-            this.mZgyro = s.ReadSingle();
+            this.mZgyro = s.ReadSingle();  
             this.mXmag = s.ReadSingle();
             this.mYmag = s.ReadSingle();
-            this.mZmag = s.ReadSingle();
-            this.mAbsPressure = s.ReadSingle();
-            this.mDiffPressure = s.ReadSingle();
-            this.mPressureAlt = s.ReadSingle();
-            this.mTemperature = s.ReadSingle();
+            this.mZmag = s.ReadSingle(); 
+            this.mAbsPressure = s.ReadSingle(); 
+            this.mDiffPressure = s.ReadSingle(); 
+            this.mPressureAlt = s.ReadSingle(); 
+            this.mTemperature = s.ReadSingle();  
             this.mFieldsUpdated = s.ReadUInt32();
+            
         }
 
         protected override void InitMetadata()
@@ -16918,8 +16919,9 @@ namespace MavLinkNet
 
         }
 
-        private UInt64 mTimeUsec;
-        private float mXacc;
+        private UInt64 mTimeUsec; // 8
+        
+        private float mXacc; // 52
         private float mYacc;
         private float mZacc;
         private float mXgyro;
@@ -16928,11 +16930,13 @@ namespace MavLinkNet
         private float mXmag;
         private float mYmag;
         private float mZmag;
+        
         private float mAbsPressure;
         private float mDiffPressure;
         private float mPressureAlt;
         private float mTemperature;
-        private UInt32 mFieldsUpdated;
+        
+        private UInt32 mFieldsUpdated; //4
     }
 
 

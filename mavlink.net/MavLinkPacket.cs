@@ -176,7 +176,7 @@ namespace MavLinkNet
                 Message = msg
             };
 
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream((int)msg.PacketSize))
             {
                 using (BinaryWriter bw = new BinaryWriter(ms))
                 {
@@ -184,6 +184,7 @@ namespace MavLinkNet
                 }
 
                 result.Payload = ms.ToArray();
+                // Console.WriteLine(result.Payload.Length + " - " + msg.PacketSize);
                 result.PayLoadLength = (byte)result.Payload.Length;
                 result.UpdateCrc();
             }

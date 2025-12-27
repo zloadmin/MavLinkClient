@@ -87,6 +87,7 @@ namespace MavLinkNet
 
         private void DeserializeMessage()
         {
+            Console.WriteLine("DeserializeMessage v1");
             UasMessage result = UasSummary.CreateFromId((byte)MessageId);
 
             if (result == null) return;  // Unknown type

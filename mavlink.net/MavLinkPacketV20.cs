@@ -95,6 +95,7 @@ namespace MavLinkNet
 
         private void DeserializeMessage()
         {
+            Console.WriteLine("DeserializeMessage v2");
             UasMessage result = UasSummary.CreateFromId(MessageId);
                         
             if (result == null) return;  // Unknown type
@@ -144,13 +145,12 @@ namespace MavLinkNet
         // __ Serialization ___________________________________________________
 
 
-        public static MavLinkPacketV20 GetPacketForMessage(
-            UasMessage msg, byte systemId, byte componentId, byte sequenceNumber)
+        public static MavLinkPacketV20 GetPacketForMessage(UasMessage msg, byte systemId, byte componentId, byte sequenceNumber)
         {
             MavLinkPacketV20 result = new MavLinkPacketV20()
             {
-                SystemId = systemId,
-                ComponentId = componentId,
+                SystemId = msg.SystemId,
+                ComponentId = msg.ComponentId,
                 PacketSequenceNumber = sequenceNumber,
                 MessageId = msg.MessageId,
                 Message = msg
@@ -163,8 +163,9 @@ namespace MavLinkNet
                     msg.SerializeBody(bw);
                 }
 
+                Console.WriteLine("msg.PacketSize" + msg.PacketSize);
                 result.Payload = ms.ToArray();
-                result.PayLoadLength = (byte)result.Payload.Length;
+                result.PayLoadLength = (byte)msg.PacketSize;
                 result.UpdateCrc();
             }
 
