@@ -160,8 +160,18 @@ namespace MavLinkNet
         {
             if (mStream == null || !mClient.Connected)
                 return;
-
             byte[] buffer = mMavLink.SerializeMessage(msg, true, sequenceNumber++);
+            string hexString = BitConverter.ToString(buffer);
+            Console.WriteLine("Send to px4 " + hexString);
+            mStream.Write(buffer, 0, buffer.Length);
+        }
+        
+        public void SendMavlinkHex(byte[] buffer)
+        {
+            if (mStream == null || !mClient.Connected)
+                return;
+            string hexString = BitConverter.ToString(buffer);
+            Console.WriteLine("Send HEX to px4 " + hexString);
             mStream.Write(buffer, 0, buffer.Length);
         }
 
