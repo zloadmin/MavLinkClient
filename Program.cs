@@ -14,9 +14,14 @@ namespace MavLinkNet
         const string REMOTE_HOST = "172.16.8.128";
         const int REMOTE_PORT = 5555;
         const int LOCAL_PORT = 4560;
+<<<<<<< HEAD
         const string DUMP_107 = "/home/zloadmin/MavLinkNet/107.txt";
         const string DUMP_115 = "/home/zloadmin/MavLinkNet/115.txt";
         const string MIN_HEX = "/home/zloadmin/MavLinkNet/1min_hex.log";
+=======
+        const string DUMP_107 = "107.txt";
+        const string DUMP_115 = "115.txt";
+>>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
         static public int packetId = 0;
         static private MavLinkTcpServerTransport _tcpServer;
         static private UasCommandLong firstCommandLong = null;
@@ -27,7 +32,11 @@ namespace MavLinkNet
         {
             List<UasHilSensor> sensors = new List<UasHilSensor>();
             List<UasHilStateQuaternion> quaternions = new List<UasHilStateQuaternion>();
+<<<<<<< HEAD
             List<string> hexes = new List<string>();
+=======
+
+>>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
             foreach (string line in File.ReadLines(DUMP_107))
             {
                 sensors.Add(JsonSerializer.Deserialize<UasHilSensor>(line));
@@ -37,10 +46,14 @@ namespace MavLinkNet
             {
                 quaternions.Add(JsonSerializer.Deserialize<UasHilStateQuaternion>(line));
             }
+
             foreach (string line in File.ReadLines(MIN_HEX))
             {
                 hexes.Add(line);
             }
+
+
+
 
             _tcpServer = new MavLinkTcpServerTransport();
             _tcpServer.OnPacketReceived += OnPacketReceived;
@@ -52,6 +65,7 @@ namespace MavLinkNet
             
             int size = sensors.Count;
             int i = 0;
+
             Thread.Sleep(5);
             UInt64 TimeUsec = 440000;
             while (i < size)
@@ -87,6 +101,17 @@ namespace MavLinkNet
                 // Thread.Sleep(5);
                 // TimeUsec += 4000;
                 // i++;
+
+            while (i < size)
+            {
+                UasHilSensor sensor = sensors[i];
+                UasHilStateQuaternion quaternion = quaternions[i];
+                
+                _tcpServer.SendMessage(sensor);
+                _tcpServer.SendMessage(quaternion);
+                Thread.Sleep(4000);
+                i++;
+
             }
 
             // foreach (string line in File.ReadLines(DUMP_107))
@@ -204,8 +229,11 @@ namespace MavLinkNet
                 firstHeartbeat = (UasHeartbeat)packet.Message;
             }
 
+<<<<<<< HEAD
             // string hexString = BitConverter.ToString(packet.Payload);
             // Console.WriteLine("HEX " + hexString);
+=======
+>>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
             UasMessagePrinter.Print(packet.Message);
 
             // if (packet.MessageId == 107)
