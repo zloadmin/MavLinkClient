@@ -161,17 +161,40 @@ namespace MavLinkNet
             if (mStream == null || !mClient.Connected)
                 return;
             byte[] buffer = mMavLink.SerializeMessage(msg, true, sequenceNumber++);
-            string hexString = BitConverter.ToString(buffer);
-            Console.WriteLine("Send to px4 " + hexString);
+            // string hexString = BitConverter.ToString(buffer);
+            // Console.WriteLine("Send to px4 " + hexString);
             mStream.Write(buffer, 0, buffer.Length);
+        }
+        public void SendMavlinkMessages(List<UasMessage> messages)
+        {
+            if (mStream == null || !mClient.Connected)
+                return;
+            byte[] buffer;
+            
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    foreach (UasMessage msg in messages)
+                    {
+                        byte[] message = mMavLink.SerializeMessage(msg, true, sequenceNumber++);
+                        stream.Write(message, 0, message.Length);
+                            
+                    }
+                    byte[] combinedBytes = stream.ToArray();
+                    
+                    mStream.Write(combinedBytes, 0, combinedBytes.Length);
+                    string hexString = BitConverter.ToString(combinedBytes);
+                    Console.WriteLine("Send to px4 " + hexString);
+                    // Get the combined array
+                    
+                }
         }
         
         public void SendMavlinkHex(byte[] buffer)
         {
             if (mStream == null || !mClient.Connected)
                 return;
-            string hexString = BitConverter.ToString(buffer);
-            Console.WriteLine("Send HEX to px4 " + hexString);
+            // string hexString = BitConverter.ToString(buffer);
+            // Console.WriteLine("Send HEX to px4 " + hexString);
             mStream.Write(buffer, 0, buffer.Length);
         }
 

@@ -16936,7 +16936,7 @@ namespace MavLinkNet
         private float mPressureAlt;
         private float mTemperature;
         
-        private UInt32 mFieldsUpdated; //4
+        private UInt32 mFieldsUpdated;
     }
 
 
