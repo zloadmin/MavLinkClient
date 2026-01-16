@@ -14,47 +14,26 @@ namespace MavLinkNet
         const string REMOTE_HOST = "172.16.8.128";
         const int REMOTE_PORT = 5555;
         const int LOCAL_PORT = 4560;
-<<<<<<< HEAD
-        const string DUMP_107 = "/home/zloadmin/MavLinkNet/107.txt";
-        const string DUMP_115 = "/home/zloadmin/MavLinkNet/115.txt";
-        const string MIN_HEX = "/home/zloadmin/MavLinkNet/1min_hex.log";
-=======
-        const string DUMP_107 = "107.txt";
-        const string DUMP_115 = "115.txt";
->>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
+
         static public int packetId = 0;
         static private MavLinkTcpServerTransport _tcpServer;
         static private UasCommandLong firstCommandLong = null;
         static private UasHeartbeat firstHeartbeat = null;
         static private UasHilSensor lastSensor = null;
+        const string DUMP_10 = "10-107messages.txt";
 
         static void Main()
         {
-            List<UasHilSensor> sensors = new List<UasHilSensor>();
-            List<UasHilStateQuaternion> quaternions = new List<UasHilStateQuaternion>();
-<<<<<<< HEAD
-            List<string> hexes = new List<string>();
-=======
+            
 
->>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
-            foreach (string line in File.ReadLines(DUMP_107))
+             List<UasHilSensor> sensors = new List<UasHilSensor>();
+
+            foreach (string line in File.ReadLines(DUMP_10)) // 10 сообщений gazebo
             {
                 sensors.Add(JsonSerializer.Deserialize<UasHilSensor>(line));
             }
 
-            foreach (string line in File.ReadLines(DUMP_115))
-            {
-                quaternions.Add(JsonSerializer.Deserialize<UasHilStateQuaternion>(line));
-            }
-
-            foreach (string line in File.ReadLines(MIN_HEX))
-            {
-                hexes.Add(line);
-            }
-
-
-
-
+            UInt64 TimeUsec = 0;
             _tcpServer = new MavLinkTcpServerTransport();
             _tcpServer.OnPacketReceived += OnPacketReceived;
             _tcpServer.Initialize();
@@ -63,84 +42,124 @@ namespace MavLinkNet
             {
             }
             
-            int size = sensors.Count;
+            
+            UasHilSensor lastHilSensor = null;
+            int limit = 9;
             int i = 0;
-
-            Thread.Sleep(5);
-            UInt64 TimeUsec = 440000;
-            while (i < size)
+            while (true)
             {
-                // string hex = hexes[i];
-                // hex = hex.Replace(" ", "");
-                // byte[] byteArray = Convert.FromHexString(hex);
-                // _tcpServer.SendMavlinkHex(byteArray);
-                // Thread.Sleep(3);
-                // i++;
-            
+                Console.WriteLine(i);
                 UasHilSensor sensor = sensors[i];
-                // UasHilStateQuaternion quaternion = quaternions[i];
-            
-                // List<UasMessage> messages = new List<UasMessage>();
-                
+                sensor.FieldsUpdated = ComputeUpdatedMask(sensor);
                 sensor.TimeUsec = TimeUsec;
                 _tcpServer.SendMessage(sensor);
-                Thread.Sleep(5);
+                lastHilSensor = sensor;
                 TimeUsec += 4000;
                 i++;
-
-                // quaternion.TimeUsec = TimeUsec;
-                // _tcpServer.SendMessage(quaternion);
-                // Thread.Sleep(4);
-                // TimeUsec += 4000;
-
-                // messages.Add(sensor);
-                // messages.Add(quaternion);
-                // _tcpServer.SendMavlinkMessages(messages);
-
-                // _tcpServer.SendMessage(sensor);
-                // Thread.Sleep(5);
-                // TimeUsec += 4000;
-                // i++;
-
-            while (i < size)
-            {
-                UasHilSensor sensor = sensors[i];
-                UasHilStateQuaternion quaternion = quaternions[i];
-                
-                _tcpServer.SendMessage(sensor);
-                _tcpServer.SendMessage(quaternion);
-                Thread.Sleep(4000);
-                i++;
-
+                if(i >= limit) {
+                    i = 0;
+                }
+                Thread.Sleep(5);
             }
 
-            // foreach (string line in File.ReadLines(DUMP_107))
-            // {
-            //     
-            // }
+              
+        }
 
+
+        const float MAX_MAG   = 2f;
+        const float MAX_GYRO  = 50f;
+        const float MAX_ACCEL = 200f;
+        const float MAX_TEMP  = 150f; 
+        const float MAX_PRESS = 2000f;
+        
+        public static UInt32 ComputeUpdatedMask(UasHilSensor now)
+        {
+            UInt32 m = 0;
+            bool accValid =
+                IsValidFloat(now.Xacc, MAX_ACCEL) &&
+                IsValidFloat(now.Yacc, MAX_ACCEL) &&
+                IsValidFloat(now.Zacc, MAX_ACCEL);
+            if (accValid)
+            {
+                m |= 1u << 0;
+                m |= 1u << 1;
+                m |= 1u << 2;    
+            }
             
-            //
-            //
-            // UasHilSensor hilSensor = GetUasHilSensorMessage();
-            // UasHilStateQuaternion hilStateQuaternion = GetUasHilStateQuaternionMessage();
-            // UasHilSensor lastHilSensor = null;
-            //
-            //  while (true)
-            // {
-            //     // стандартный интервал (например 1000 мс)
-            //     _tcpServer.SendMessage(hilSensor);
-            //     if (lastHilSensor != null)
-            //     {
-            //         UasHilSensor prev = lastHilSensor;
-            //         UasHilSensor curr = hilSensor;
-            //         hilSensor.FieldsUpdated = HilSensorBitmap.Generate(prev, curr);
-            //     }
-            //     _tcpServer.SendMessage(hilSensor);
-            //     lastHilSensor = hilSensor;
-            //     Thread.Sleep(100);
-            //     
-            // }
+            bool gyroValid =
+                IsValidFloat(now.Xgyro, MAX_GYRO) &&
+                IsValidFloat(now.Ygyro, MAX_GYRO) &&
+                IsValidFloat(now.Zgyro, MAX_GYRO);
+            
+            if (gyroValid)
+            {
+                m |= 1u << 3;
+                m |= 1u << 4;
+                m |= 1u << 5;    
+            }   
+            
+            bool magValid =
+                IsValidFloat(now.Xmag, MAX_MAG) &&
+                IsValidFloat(now.Ymag, MAX_MAG) &&
+                IsValidFloat(now.Zmag, MAX_MAG);
+            
+            if (magValid)
+            {
+                m |= 1u << 6;
+                m |= 1u << 7;
+                m |= 1u << 8;    
+            }
+
+            bool validAbsPressure = IsValidFloat(now.AbsPressure, MAX_PRESS);
+            if (validAbsPressure)
+            {
+                m |= 1u << 9;
+            }
+
+            bool validDiffPressure = IsValidFloat(now.DiffPressure, MAX_PRESS); 
+            if (validDiffPressure)
+            {
+                m |= 1u << 10;    
+            }
+
+            bool validPressureAlt = IsValidFloat(now.PressureAlt, MAX_PRESS) && now.PressureAlt > 0.1f; 
+            if (validPressureAlt)
+            {
+                m |= 1u << 11;    
+            }
+
+            bool tempValid = IsValidFloat(now.Temperature, MAX_TEMP);
+            if (tempValid)
+            {
+                m |= 1u << 12;
+            }
+            // Console.WriteLine("--------------------");
+            // Console.WriteLine("accValid " + accValid);
+            // Console.WriteLine("gyroValid " + gyroValid);
+            // Console.WriteLine("magValid " + magValid);
+            // Console.WriteLine("validAbsPressure " + validAbsPressure);
+            // Console.WriteLine("validDiffPressure " + validDiffPressure);
+            // Console.WriteLine("validPressureAlt " + validPressureAlt);
+            // Console.WriteLine("tempValid " + tempValid);
+            return m;
+        }
+
+        
+        static bool IsValidFloat(float v, float maxAbs)
+        {
+            if (float.IsNaN(v) || float.IsInfinity(v))
+                return false;
+
+            float av = Math.Abs(v);
+
+            // reject denormals / uninitialized memory
+            if (av < 1e-6f)
+                return false;
+            
+            if (av > maxAbs)
+                return false;
+
+            return true;
         }
 
         // Создан на основе газеповского сообщения  
@@ -155,36 +174,27 @@ namespace MavLinkNet
         {
             return new UasHilSensor
             {
-                SystemId = 255,
+                 SystemId = 255,
                 ComponentId = 0,
                 TimeUsec = unchecked((uint)Environment.TickCount),
-                Xacc = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Yacc = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Zacc = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Xgyro = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Ygyro = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Zgyro = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Xmag = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Ymag = GenerateRandomFloatInRange(0.0f, 1.0f),
-                Zmag = GenerateRandomFloatInRange(0.0f, 1.0f),
-                AbsPressure = GenerateRandomFloatInRange(0.0f, 1000.0f),
-                DiffPressure = GenerateRandomFloatInRange(0.0f, 1000.0f),
-                PressureAlt = GenerateRandomFloatInRange(0.0f, 1000.0f),
-                Temperature = GenerateRandomFloatInRange(0.0f, 100.0f),
-                FieldsUpdated = 0
+                Xacc = 0.036102064f,
+                Yacc = -0.010861181f,
+                Zacc = -0.030836519f,
+                Xgyro = -0.010941599f,
+                Ygyro = 0.002232928f,
+                Zgyro = 0.0039140754f,
+                Xmag = 0f,
+                Ymag = -5.189695E+11f,
+                Zmag = 10.959854f,
+                AbsPressure = 0f,
+                DiffPressure = 9.1834E-41f,
+                PressureAlt = -4.4216272E-14f,
+                Temperature = 9.1834E-41f,
+                FieldsUpdated = 63
             };
         }
 
-        public static float GenerateRandomFloatInRange(float minValue, float maxValue)
-        {
-            Random rand = new Random();
-            // Calculate the range (max - min) and scale the NextDouble() result
-            double range = (double)maxValue - (double)minValue;
-            double scaledValue = rand.NextDouble() * range;
-            double shiftedValue = scaledValue + (double)minValue;
-
-            return (float)shiftedValue;
-        }
+    
 
 
         // Создан на основе газеповского сообщения  
@@ -229,26 +239,9 @@ namespace MavLinkNet
                 firstHeartbeat = (UasHeartbeat)packet.Message;
             }
 
-<<<<<<< HEAD
-            // string hexString = BitConverter.ToString(packet.Payload);
-            // Console.WriteLine("HEX " + hexString);
-=======
->>>>>>> f30fc568609b1e5650d1483b413f4e3f241c789e
             UasMessagePrinter.Print(packet.Message);
 
-            // if (packet.MessageId == 107)
-            // {
-            //     Console.Clear();
-            //     UasMessagePrinter.Print(packet.Message);
-            //     if (lastSensor != null)
-            //     {
-            //         UasHilSensor prev = lastSensor;
-            //         UasHilSensor curr = (UasHilSensor)packet.Message;
-            //         UInt32 bitMap = HilSensorBitmap.Generate(prev, curr);
-            //         Console.WriteLine("My bitmap " + bitMap);
-            //     }
-            //     lastSensor = (UasHilSensor)packet.Message;
-            // }
+            // можно сохранять дамп hex в json
             // if (packet.MessageId == 107)
             // {
             //     File.AppendAllText(DUMP_107,
@@ -262,28 +255,7 @@ namespace MavLinkNet
             // }
         }
 
-        static async Task ProxyServer()
-        {
-            var listener = new TcpListener(IPAddress.Any, LOCAL_PORT);
-
-
-            listener.Start();
-
-            Console.WriteLine($"[PROXY] Listening on TCP {LOCAL_PORT}");
-            Console.WriteLine($"[PROXY] Forwarding to {REMOTE_HOST}:{REMOTE_PORT}");
-
-            while (true)
-            {
-                var px4 = await listener.AcceptTcpClientAsync();
-
-                Console.WriteLine("[PROXY] PX4 connected by port: " + LOCAL_PORT);
-                TcpClient gazebo = await WaitForRemoteServerAsync();
-                Console.WriteLine("[PROXY] Gazebo connected by port: " + REMOTE_PORT);
-
-                _ = ProxyPipe(gazebo, px4, "gazebo → px4");
-                _ = ProxyPipe(px4, gazebo, "px4 → gazebo");
-            }
-        }
+       
 
         public static List<byte[]> Split(byte[] data)
         {
@@ -374,52 +346,8 @@ namespace MavLinkNet
             Console.WriteLine();
         }
 
-        static async Task<TcpClient> WaitForRemoteServerAsync()
-        {
-            while (true)
-            {
-                try
-                {
-                    var server = new TcpClient();
-                    await server.ConnectAsync(REMOTE_HOST, REMOTE_PORT);
-                    return server;
-                }
-                catch (SocketException)
-                {
-                    Console.WriteLine($"[PROXY] Waiting for PX4 TCP {REMOTE_HOST}:{REMOTE_PORT} ...");
-                    await Task.Delay(500); // 0.5 секунды
-                }
-            }
-        }
+        
 
-        static async Task ProxyPipe(TcpClient from, TcpClient to, string tag)
-        {
-            var fromStream = from.GetStream();
-            var toStream = to.GetStream();
-
-            byte[] buffer = new byte[4096];
-
-            try
-            {
-                while (true)
-                {
-                    int read = await fromStream.ReadAsync(buffer, 0, buffer.Length);
-                    if (read <= 0) break;
-                    PrintHex(buffer, read, tag);
-                    PrintMessage(buffer, read, tag);
-                    await toStream.WriteAsync(buffer, 0, read);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[{tag}] ERROR: {ex.Message}");
-            }
-            finally
-            {
-                from.Close();
-                to.Close();
-                Console.WriteLine($"[{tag}] Connection closed");
-            }
-        }
+        
     }
 }
