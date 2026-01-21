@@ -254,8 +254,7 @@ namespace MavLinkNet
             // можно сохранять дамп hex в json
             // if (packet.MessageId == 107)
             // {
-            //     File.AppendAllText(DUMP_107,
-            //         JsonSerializer.Serialize((UasHilSensor)packet.Message) + Environment.NewLine);
+            // File.AppendAllText("json_dump.txt"JsonSerializer.Serialize((UasHilSensor)packet.Message) + Environment.NewLine);
             // }
             //
             // if (packet.MessageId == 115)

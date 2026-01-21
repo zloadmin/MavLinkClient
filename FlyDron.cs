@@ -14,7 +14,8 @@ public class FlyDron
         {
             _udpTransport.SendMessage(GetDisArmMessage());
             _udpTransport.SendMessage(GetOffboardModeMessage());
-            _udpTransport.SendMessage(GetUasHilActuatorControls());
+            _udpTransport.SendMessage(GetTakeOffMessage());
+            // _udpTransport.SendMessage(GetUasHilActuatorControls());
             Thread.Sleep(100);
         }
     }
