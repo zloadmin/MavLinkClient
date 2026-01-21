@@ -50,19 +50,30 @@ namespace MavLinkNet
             {
                 Console.WriteLine(i);
                 UasHilSensor sensor = sensors[i];
+
+                sensor.
                 sensor.FieldsUpdated = ComputeUpdatedMask(sensor);
                 sensor.TimeUsec = TimeUsec;
                 _tcpServer.SendMessage(sensor);
                 lastHilSensor = sensor;
-                TimeUsec += 4000;
+                TimeUsec += 4000; // 12000
                 i++;
                 if(i >= limit) {
                     i = 0;
                 }
                 Thread.Sleep(5);
-            }
+            }              
+        }
 
-              
+        public static float GenerateRandomFloatInRange(float minValue, float maxValue)
+        {
+            Random rand = new Random();
+            // Calculate the range (max - min) and scale the NextDouble() result
+            double range = (double)maxValue - (double)minValue;
+            double scaledValue = rand.NextDouble() * range;
+            double shiftedValue = scaledValue + (double)minValue;
+
+            return (float)shiftedValue;
         }
 
 
