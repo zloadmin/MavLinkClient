@@ -50,8 +50,7 @@ namespace MavLinkNet
             {
                 Console.WriteLine(i);
                 UasHilSensor sensor = sensors[i];
-
-                sensor.
+                
                 sensor.FieldsUpdated = ComputeUpdatedMask(sensor);
                 sensor.TimeUsec = TimeUsec;
                 _tcpServer.SendMessage(sensor);
