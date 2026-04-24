@@ -20,15 +20,18 @@ namespace MavLinkNet
         static private UasCommandLong firstCommandLong = null;
         static private UasHeartbeat firstHeartbeat = null;
         static private UasHilSensor lastSensor = null;
-        const string DUMP_10 = "10-107messages.txt";
+        
 
         static void Main()
         {
             
+            var dump10 = Path.Combine(AppContext.BaseDirectory, "data", "10-107messages.txt"); 
+            
+            
 
              List<UasHilSensor> sensors = new List<UasHilSensor>();
 
-            foreach (string line in File.ReadLines(DUMP_10)) // 10 сообщений gazebo
+            foreach (string line in File.ReadLines(dump10)) // 10 сообщений gazebo
             {
                 sensors.Add(JsonSerializer.Deserialize<UasHilSensor>(line));
             }
